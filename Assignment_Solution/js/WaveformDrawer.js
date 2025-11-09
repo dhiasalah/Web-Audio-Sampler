@@ -137,34 +137,32 @@ export default class WaveformDrawer {
     const channels = buffer.numberOfChannels;
     this.peaks = new Float32Array(this.displayWidth);
 
-    const chunkSize = 100; // Process 100 pixels at a time
+    const chunkSize = 300; // Process 300 pixels at a time (increased from 100)
     let currentPixel = 0;
 
     const processChunk = () => {
       const endPixel = Math.min(currentPixel + chunkSize, this.displayWidth);
 
       for (let i = currentPixel; i < endPixel; i++) {
+        let peak = 0;
+
         for (let c = 0; c < channels; c++) {
           const chan = buffer.getChannelData(c);
           const start = ~~(i * sampleSize);
           const end = start + sampleSize;
-          let peak = 0;
+          let channelPeak = 0;
 
           for (let j = start; j < end; j += this.sampleStep) {
-            const value = chan[j];
-            if (value > peak) {
-              peak = value;
-            } else if (-value > peak) {
-              peak = -value;
+            const absValue = Math.abs(chan[j]);
+            if (absValue > channelPeak) {
+              channelPeak = absValue;
             }
           }
 
-          if (c > 0) {
-            this.peaks[i] += peak / channels;
-          } else {
-            this.peaks[i] = peak / channels;
-          }
+          peak += channelPeak / channels;
         }
+
+        this.peaks[i] = peak;
       }
 
       currentPixel = endPixel;

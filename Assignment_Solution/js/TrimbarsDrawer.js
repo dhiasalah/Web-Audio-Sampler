@@ -23,6 +23,10 @@ export default class TrimbarsDrawer {
       selected: false,
       dragged: false,
     };
+
+    // Cache canvas dimensions to avoid repeated property access
+    this.canvasWidth = canvas.width;
+    this.canvasHeight = canvas.height;
   }
 
   /**
@@ -37,6 +41,11 @@ export default class TrimbarsDrawer {
    */
   draw() {
     const ctx = this.ctx;
+    const leftX = this.leftTrimBar.x;
+    const rightX = this.rightTrimBar.x;
+    const canvasWidth = this.canvas.width;
+    const canvasHeight = this.canvas.height;
+
     ctx.save();
 
     ctx.lineWidth = 3;
@@ -44,42 +53,41 @@ export default class TrimbarsDrawer {
     // Left trim bar line
     ctx.strokeStyle = this.leftTrimBar.color;
     ctx.beginPath();
-    ctx.moveTo(this.leftTrimBar.x, 0);
-    ctx.lineTo(this.leftTrimBar.x, this.canvas.height);
+    ctx.moveTo(leftX, 0);
+    ctx.lineTo(leftX, canvasHeight);
     ctx.stroke();
 
     // Right trim bar line
     ctx.strokeStyle = this.rightTrimBar.color;
     ctx.beginPath();
-    ctx.moveTo(this.rightTrimBar.x, 0);
-    ctx.lineTo(this.rightTrimBar.x, this.canvas.height);
+    ctx.moveTo(rightX, 0);
+    ctx.lineTo(rightX, canvasHeight);
     ctx.stroke();
 
     // Left triangle handle - LARGER and EASIER TO GRAB
     ctx.fillStyle = this.leftTrimBar.color;
     ctx.beginPath();
-    ctx.moveTo(this.leftTrimBar.x, 0);
-    ctx.lineTo(this.leftTrimBar.x + 20, 18);
-    ctx.lineTo(this.leftTrimBar.x, 36);
+    ctx.moveTo(leftX, 0);
+    ctx.lineTo(leftX + 20, 18);
+    ctx.lineTo(leftX, 36);
     ctx.fill();
 
     // Right triangle handle - LARGER and EASIER TO GRAB
     ctx.fillStyle = this.rightTrimBar.color;
     ctx.beginPath();
-    ctx.moveTo(this.rightTrimBar.x, 0);
-    ctx.lineTo(this.rightTrimBar.x - 20, 18);
-    ctx.lineTo(this.rightTrimBar.x, 36);
+    ctx.moveTo(rightX, 0);
+    ctx.lineTo(rightX - 20, 18);
+    ctx.lineTo(rightX, 36);
     ctx.fill();
 
-    // Grey overlay for trimmed regions
+    // Grey overlay for trimmed regions - optimized with single calls
     ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-    ctx.fillRect(0, 0, this.leftTrimBar.x, this.canvas.height);
-    ctx.fillRect(
-      this.rightTrimBar.x,
-      0,
-      this.canvas.width - this.rightTrimBar.x,
-      this.canvas.height
-    );
+    if (leftX > 0) {
+      ctx.fillRect(0, 0, leftX, canvasHeight);
+    }
+    if (rightX < canvasWidth) {
+      ctx.fillRect(rightX, 0, canvasWidth - rightX, canvasHeight);
+    }
 
     ctx.restore();
   }
@@ -88,6 +96,8 @@ export default class TrimbarsDrawer {
    * Highlight trim bars when mouse is close
    */
   highLightTrimBarsWhenClose(mousePos) {
+    const canvasHeight = this.canvasHeight;
+
     // Check left trim bar - INCREASED DETECTION RADIUS
     let d = distance(mousePos.x, mousePos.y, this.leftTrimBar.x, 18);
 
@@ -154,7 +164,7 @@ export default class TrimbarsDrawer {
     this.highLightTrimBarsWhenClose(mousePos);
 
     // Constrain to canvas bounds
-    const clampedX = Math.max(0, Math.min(mousePos.x, this.canvas.width));
+    const clampedX = Math.max(0, Math.min(mousePos.x, this.canvasWidth));
 
     if (this.leftTrimBar.dragged) {
       // Only move if it stays left of right bar

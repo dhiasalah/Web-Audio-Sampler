@@ -82,6 +82,8 @@ export default class SamplerGUI {
 
     // Track which keys are pressed
     const keysPressed = {};
+    // Cache padButtons for faster access
+    const padButtons = this.padButtons;
 
     document.addEventListener("keydown", (event) => {
       const key = event.key.toLowerCase();
@@ -94,8 +96,8 @@ export default class SamplerGUI {
         const pad = this.engine.getPad(padIndex);
 
         if (pad && pad.loaded) {
-          // Visual feedback
-          const button = this.padButtons[padIndex];
+          // Visual feedback - use cached reference
+          const button = padButtons[padIndex];
           button.classList.add("playing");
 
           // Play the sound
@@ -389,12 +391,27 @@ export default class SamplerGUI {
    * Start animation loop for trim bars
    */
   startAnimationLoop() {
+    let isAnimating = false;
     const animate = () => {
       this.trimbarsDrawer.clear();
       this.trimbarsDrawer.draw();
-      requestAnimationFrame(animate);
+      isAnimating = false;
     };
-    animate();
+
+    // Only schedule next frame when needed
+    const scheduleAnimation = () => {
+      if (!isAnimating) {
+        isAnimating = true;
+        requestAnimationFrame(animate);
+      }
+    };
+
+    // Listen for mouse movement to trigger animation
+    this.overlayCanvas.addEventListener("mousemove", scheduleAnimation, {
+      passive: true,
+    });
+    // Initial animation
+    scheduleAnimation();
   }
 
   /**
