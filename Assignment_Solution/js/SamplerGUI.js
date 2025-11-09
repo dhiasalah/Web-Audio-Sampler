@@ -118,11 +118,6 @@ export default class SamplerGUI {
         event.preventDefault();
       }
     });
-
-    console.log("Keyboard controls enabled (A-Z Alphabet)!");
-    console.log(
-      "Use A-P to play pads 1-16, Q-Z to play pads 1-10 (26 letter keys available!)"
-    );
   }
 
   /**
@@ -281,10 +276,6 @@ export default class SamplerGUI {
     // Redraw trim bars on overlay canvas
     this.trimbarsDrawer.clear();
     this.trimbarsDrawer.draw();
-
-    console.log(
-      `Trim bars updated - Left: ${leftPixel}px, Right: ${rightPixel}px, Duration: ${duration}s`
-    );
   }
 
   /**
@@ -299,8 +290,6 @@ export default class SamplerGUI {
     this.selectedPadIndex = padIndex;
     const pad = this.engine.getPad(padIndex);
 
-    console.log(`Selected pad ${padIndex}:`, pad);
-
     // Update button states
     this.padButtons.forEach((btn, idx) => {
       if (idx === padIndex) {
@@ -314,13 +303,6 @@ export default class SamplerGUI {
     if (pad && pad.loaded) {
       this.waveformSection.style.display = "block";
       this.currentPadName.textContent = pad.name;
-
-      console.log(`Displaying waveform for pad ${padIndex}:`, {
-        name: pad.name,
-        duration: pad.buffer.duration,
-        trimStart: pad.trimStart,
-        trimEnd: pad.trimEnd,
-      });
 
       // Draw waveform
       this.waveformDrawer.init(pad.buffer, this.waveformCanvas, "#667eea");

@@ -16,11 +16,9 @@ window.onload = async function init() {
 
   // Initialize Sampler Engine
   samplerEngine = new SamplerEngine(ctx);
-  console.log("Sampler Engine initialized");
 
   // Initialize Sampler GUI
   samplerGUI = new SamplerGUI(samplerEngine);
-  console.log("Sampler GUI initialized");
 
   // Setup UI controls
   setupControls();
@@ -89,8 +87,6 @@ async function loadPresetsFromServer() {
 
     statusText.textContent = `✓ Found ${presets.length} preset(s) - Ready!`;
     statusText.className = "success";
-
-    console.log("Loaded presets:", presets);
   } catch (error) {
     console.error("Error loading presets:", error);
 
@@ -172,9 +168,6 @@ async function loadPresetSounds(presetIndex) {
         }
       });
       soundNames = preset.samples.map((sample) => sample.name);
-
-      // Debug: log the URLs
-      console.log("Built URLs:", soundURLs);
     } else if (preset.files && Array.isArray(preset.files)) {
       // Old format with files array
       if (typeof preset.files[0] === "string") {
@@ -247,8 +240,6 @@ async function loadPresetSounds(presetIndex) {
     statusText.textContent = `✓ Loaded ${successCount}/${totalSounds} sounds`;
     statusText.className = "success";
     loadAllBtn.disabled = false;
-
-    console.log(`Successfully loaded ${successCount} sounds`);
   } catch (error) {
     console.error("Error loading preset sounds:", error);
     statusText.textContent = `✗ Error: ${error.message}`;

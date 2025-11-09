@@ -66,8 +66,6 @@ export default class SamplerEngine {
    * @param {Function} progressCallback - Optional progress callback
    */
   async loadSoundFromURL(padIndex, url, progressCallback = null) {
-    console.log(`Loading sound ${padIndex} from URL: ${url}`);
-
     const response = await fetch(url);
 
     if (!response.ok) {
