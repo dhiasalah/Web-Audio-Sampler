@@ -1,6 +1,4 @@
-interface HeaderProps {}
-
-export default function Header({}: HeaderProps) {
+export default function Header() {
   return (
     <header className="main-header">
       <div className="header-content">
